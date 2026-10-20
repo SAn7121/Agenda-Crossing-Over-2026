@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi agenda · Crossing Over 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f7;--card:#fff;--ink:#12262b;--mute:#5d7177;--line:#d5dfe2;--main:#0b7a75;--bio:#7b4fb8;--warn:#b45f06;--tab:#12262b;--tabink:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1b1f;--card:#15292e;--ink:#e8f1f2;--mute:#9bb0b5;--line:#264047;--main:#3fd0c6;--bio:#b894f0;--warn:#f0b35a;--tab:#e8f1f2;--tabink:#0d1b1f}}
+:root[data-theme="dark"]{--bg:#0d1b1f;--card:#15292e;--ink:#e8f1f2;--mute:#9bb0b5;--line:#264047;--main:#3fd0c6;--bio:#b894f0;--warn:#f0b35a;--tab:#e8f1f2;--tabink:#0d1b1f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+header{max-width:760px;margin:0 auto;padding:28px 18px 8px}
+h1{font-size:clamp(28px,6vw,44px);line-height:1.05;margin:0 0 6px;font-weight:800;letter-spacing:-.02em}
+header p{margin:0;color:var(--mute)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:12px 18px;border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:21}
+.in{max-width:760px;margin:0 auto}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.days button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 6px;cursor:pointer;line-height:1.2}
+.days button b{display:block;font-size:22px;font-weight:800}
+.days button span{font-size:13px;color:var(--mute)}
+.days button[aria-selected="true"]{background:var(--tab);color:var(--tabink);border-color:var(--tab)}
+.days button[aria-selected="true"] span{color:inherit;opacity:.8}
+.filters{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.filters button{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:5px 12px;cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--ink);font-weight:600}
+button:focus-visible{outline:3px solid var(--main);outline-offset:2px}
+main{max-width:760px;margin:0 auto;padding:16px 18px 40px}
+.sum{color:var(--mute);font-size:14px;margin:0 0 14px}
+.row{display:grid;grid-template-columns:62px 1fr;gap:12px;margin-bottom:14px}
+.time{font-weight:800;font-size:20px;letter-spacing:-.01em;padding-top:12px}
+.slots{display:grid;gap:8px}
+.grp{font-size:13px;color:var(--warn);font-weight:600;margin:0 0 -2px}
+.card{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--main);border-radius:12px;padding:12px 14px}
+.card.bio{border-left-color:var(--bio)}
+.card h3{margin:0 0 4px;font-size:17px;line-height:1.25;font-weight:600}
+.who{margin:0;color:var(--mute);font-size:14px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:12.5px;border:1px solid var(--line);border-radius:99px;padding:2px 9px;color:var(--mute)}
+.chip.room{color:var(--ink);font-weight:600}
+.chip.opt{color:var(--warn);border-color:var(--warn)}
+.note{margin:8px 0 0;font-size:14px;border-top:1px dashed var(--line);padding-top:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:16px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.foot{color:var(--mute);font-size:13px;margin-top:24px}
+@media (min-width:700px){.row{grid-template-columns:84px 1fr}.time{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Mi agenda en Crossing Over 2026</h1>
+<p>LATAM BioExpo · 21, 22 y 23 de octubre</p>
+</header>
+<div class="bar"><div class="in">
+<div class="days" role="tablist" id="days"></div>
+<div class="filters" id="filters">
+<button data-f="all" aria-pressed="true">Todo</button>
+<button data-f="main" aria-pressed="false">Electrónica, datos y automatización</button>
+<button data-f="bio" aria-pressed="false">Bio y medicina</button>
+</div>
+</div></div>
+<main>
+<div class="legend"><span><i style="background:var(--main)"></i>Interés principal</span><span><i style="background:var(--bio)"></i>Bio y medicina</span></div>
+<p class="sum" id="sum"></p>
+<div id="list"></div>
+<p class="foot">El programa no trae horarios de fin: las duraciones son aproximadas. Las charlas “Próximamente” del viernes en Sala C3 todavía no tienen título.</p>
+</main>
+<script>
+var DAYS=[
+{k:"mie",n:"Miércoles",d:21,date:"2026-10-21",items:[
+["10:00","Sala A","Reinventing Drug Discovery with AI","José Duca","m","Plenaria. Más modelado computacional que señales."],
+["11:30","Sala A","Caracterización biomolecular automatizada","Lucas Gentilini (Sartorius)","m","La más cercana a instrumentación y equipos de medición."],
+["14:00","Sala A","The Next Wave of Advanced Therapies","Laura Sepp-Lorenzino (Intellia)","b"],
+["14:20","Sala C1","AI for Hard Problems in Biotech R&D","Marcelo Martí (LUCAI)","m","Dura unos 20 minutos."],
+["14:40","Sala A","The Future Is Biologics (mesa redonda)","Martín Marro, Ariel Feldstein, Pablo Sardi, Laura Sepp-Lorenzino","b","Empezó a las 14:20: llegás a los últimos 20 minutos.","opt"],
+["16:00","Sala C1","When AI Meets Biology (panel)","Ana Indart, Nico Reinoso, Esteban Hernando","m"],
+["16:20","Sala A","Biopharma Innovation made in LATAM (panel)","Osvaldo Podhajcer, Pia Garat, Augusto Pich Otero","b","Se superpone con el panel de IA. Priorizaría el de IA.","alt","a1"],
+["16:40","Sala C3","Startups del Biotech Startup Award","Nanobioengineering, NanoProX y otras","m","Mirá de qué trata cada una: el programa no lo detalla.","opt"],
+["17:00","Sala C2","The Bottlenecks of Industrial Biomanufacturing (mesa redonda)","Rafael Kampke, Hugo Menzella, María Laura Matos","m","Elegí una de las dos charlas de biomanufactura.","alt","a2"],
+["17:20","Sala A","Living Factories: Rebuilding Biomanufacturing around Biology","Juan Martín Cabaleiro (Stämm)","m","Elegí una de las dos charlas de biomanufactura.","alt","a2"]
+]},
+{k:"jue",n:"Jueves",d:22,date:"2026-10-22",items:[
+["10:00","Sala A","Building the AI Infrastructure for Biotech","Martín Sanado (AWS)","m"],
+["11:50","Sala A","Manufacturing Biotech in LATAM (panel)","Boris Rodriguez, Germán Sánchez Alberti, Guillermina Forno","m","Enfoque de procesos y planta."],
+["14:00","Sala C1","Engineering Gene Therapies with AAV","Gustavo Pesquín (AskBio-Bayer)","b"],
+["14:20","Sala C1","New-Generation GLP-1-Based Therapies for Obesity and Type 2 Diabetes","Martín Marro (Eli Lilly)","b"],
+["14:40","Sala C2","Innovation Starts Here: The Infrastructure Behind Biotech Success (panel)","Diego Lelis, Andrés Abin, Alejandrina Vendrell","m","Elegí una de las dos charlas de las 14:40.","alt","a3"],
+["14:40","Sala C1","From Diagnosis to Disease Modification: terapias para enfermedades raras","Pablo Sardi (Sanofi)","b","Elegí una de las dos charlas de las 14:40.","alt","a3"],
+["17:20","Sala C1","mRNA Vaccines: Beyond COVID","Germán Sánchez Alberti (Sinergium Biotech)","b","","opt"]
+]},
+{k:"vie",n:"Viernes",d:23,date:"2026-10-23",items:[
+["15:00","Sala C1","Edición génica para xenotrasplantes","CROFABiotech","b","Se superpone con la keynote regulatoria de ANMAT en Sala A, menos afín.","opt"],
+["16:00","Sala C1","The Last Mile of IVD Innovation","Carlos Nocera (CGN Life Sciences)","m","Cómo llevar tecnología de diagnóstico a la práctica clínica."],
+["16:20","Sala C1","The Next Generation of In Vitro Diagnostics (panel)","Diego Comerci (Chemtest), Marina Simian (Oncoliq), Ariel Notcovich (Wiener)","m","Se superpone con lo siguiente: podés ver solo el inicio."],
+["16:40","Sala C2","Engineering Biomanufacturing: from Hygienic Design and Automation to CIP/SIP","Miguel Harutunian (Edelflex)","m","El más cercano a maquinaria y control."],
+["17:00","Sala C1","From the Bench to the Patient: First-in-Human Study","Ventura Simonovich (Hospital Italiano)","b","Entra justo entre las dos charlas de biomanufactura de Sala C2."],
+["17:20","Sala C2","Digital & Traceable Biomanufacturing","Nicolás Molina Vuistaz (MOX IT)","m"]
+]}];
+var day=0,filt="all";
+var $=function(i){return document.getElementById(i)};
+function init(){
+var t=new Date().toISOString().slice(0,10);
+DAYS.forEach(function(d,i){if(d.date===t)day=i});
+$("days").innerHTML=DAYS.map(function(d,i){return '<button role="tab" data-i="'+i+'"><b>'+d.d+'</b><span>'+d.n+'</span></button>'}).join("");
+$("days").onclick=function(e){var b=e.target.closest("button");if(b){day=+b.dataset.i;render();window.scrollTo(0,0)}};
+$("filters").onclick=function(e){var b=e.target.closest("button");if(b){filt=b.dataset.f;render()}};
+render()}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function render(){
+Array.prototype.forEach.call($("days").children,function(b,i){b.setAttribute("aria-selected",i===day)});
+Array.prototype.forEach.call($("filters").children,function(b){b.setAttribute("aria-pressed",b.dataset.f===filt)});
+var D=DAYS[day],items=D.items.filter(function(x){return filt==="all"||(filt==="main"?x[4]==="m":x[4]==="b")});
+$("sum").textContent=D.n+" "+D.d+": "+items.length+(items.length===1?" charla":" charlas");
+var times=[];items.forEach(function(x){if(times.indexOf(x[0])<0)times.push(x[0])});
+$("list").innerHTML=times.map(function(tm){
+var g=items.filter(function(x){return x[0]===tm});
+var cards=g.map(function(x){
+var kind=x[4]==="b"?"bio":"";
+var chips='<span class="chip room">'+x[1]+'</span><span class="chip">'+(x[4]==="b"?"Bio y medicina":"Principal")+'</span>';
+if(x[6]==="opt")chips+='<span class="chip opt">Opcional</span>';
+if(x[6]==="alt")chips+='<span class="chip opt">Alternativa</span>';
+return '<article class="card '+kind+'"><h3>'+esc(x[2])+'</h3><p class="who">'+esc(x[3])+'</p><div class="meta">'+chips+'</div>'+(x[5]?'<p class="note">'+esc(x[5])+'</p>':'')+'</article>'}).join("");
+var alt=g.length>1?'<p class="grp">Hay que elegir una</p>':'';
+return '<section class="row"><div class="time">'+tm+'</div><div class="slots">'+alt+cards+'</div></section>'}).join("")||'<p class="sum">No hay charlas con este filtro.</p>'}
+init();
+</script>
+</body>
+</html>
